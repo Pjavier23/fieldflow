@@ -6,7 +6,7 @@ const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 export async function POST() {
   try {
-    // Create fresh demo user
+    // Create fresh demo user (trigger auto-creates profile)
     const createRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
       method: 'POST',
       headers: {
@@ -15,13 +15,11 @@ export async function POST() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: `demo${Date.now()}@fieldflow.demo`,
+        email: `demo${Date.now()}@fieldflow-demo.com`,
         password: 'DemoFlow2026!',
         email_confirm: true,
-        user_metadata: { 
+        user_metadata: {
           full_name: 'Demo Client',
-          contact_name: 'Jane Demo',
-          business_name: 'Demo Construction LLC',
           role: 'client'
         }
       })
@@ -32,10 +30,10 @@ export async function POST() {
       return NextResponse.json({ error: createData.msg || 'Failed to create demo' }, { status: 500 })
     }
 
-    // Create profile
+    // Update profile with business info (trigger already created it)
     const userId = createData.id
-    await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
-      method: 'POST',
+    await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`, {
+      method: 'PATCH',
       headers: {
         'apikey': ANON_KEY,
         'Authorization': `Bearer ${SR_KEY}`,
@@ -43,15 +41,13 @@ export async function POST() {
         'Prefer': 'return=minimal'
       },
       body: JSON.stringify({
-        id: userId,
-        email: createData.email,
-        role: 'client',
         business_name: 'Demo Construction LLC',
-        contact_name: 'Jane Demo'
+        contact_name: 'Jane Demo',
+        phone: '(555) 123-4567'
       })
     })
 
-    // Sign in
+    // Sign in with fresh credentials
     const signInRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
       method: 'POST',
       headers: {
