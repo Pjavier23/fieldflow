@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [demoLoading, setDemoLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -22,6 +23,28 @@ export default function LoginPage() {
       return
     }
     router.push('/dashboard')
+  }
+
+  async function handleDemo() {
+    setError('')
+    setDemoLoading(true)
+    try {
+      const res = await fetch('/api/auth/demo', { method: 'POST' })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+        setDemoLoading(false)
+        return
+      }
+      await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      })
+      router.push('/dashboard')
+    } catch (e) {
+      setError('Demo login unavailable. Please sign in normally.')
+      setDemoLoading(false)
+    }
   }
 
   return (
@@ -95,12 +118,37 @@ export default function LoginPage() {
             style={{
               width: '100%', padding: '12px', background: loading ? 'var(--gray-300)' : 'var(--green)',
               color: 'white', border: 'none', borderRadius: 'var(--r-sm)',
-              fontSize: '15px', fontWeight: '500', cursor: loading ? 'not-allowed' : 'pointer'
+              fontSize: '15px', fontWeight: '500', cursor: loading ? 'not-allowed' : 'pointer',
+              marginBottom: '12px'
             }}
           >
             {loading ? 'Signing in...' : 'Sign in to portal'}
           </button>
         </form>
+
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem'
+        }}>
+          <div style={{ flex: 1, height: '1px', background: 'var(--gray-200)' }} />
+          <span style={{ fontSize: '12px', color: 'var(--gray-500)' }}>or</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--gray-200)' }} />
+        </div>
+
+        <button
+          onClick={handleDemo} disabled={demoLoading}
+          style={{
+            width: '100%', padding: '12px',
+            background: demoLoading ? 'var(--gray-100)' : '#f0fdf4',
+            color: demoLoading ? 'var(--gray-500)' : 'var(--green)',
+            border: '1px solid',
+            borderColor: demoLoading ? 'var(--gray-200)' : '#bbf7d0',
+            borderRadius: 'var(--r-sm)',
+            fontSize: '14px', fontWeight: '500',
+            cursor: demoLoading ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {demoLoading ? 'Setting up demo...' : '🚀 Try Demo Account'}
+        </button>
 
         <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--gray-500)', marginTop: '1.5rem' }}>
           No account? <span style={{ color: 'var(--green)', fontWeight: '500' }}>Contact your tax preparer</span>
