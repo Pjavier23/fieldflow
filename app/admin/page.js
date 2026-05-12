@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
+import { apiFetch } from '../../lib/api-client'
 import Nav from '../../components/Nav'
 
 export default function AdminPage() {
@@ -33,7 +34,7 @@ export default function AdminPage() {
     setCreating(true)
     setMsg('')
     try {
-      const r = await fetch('/api/auth/create-client', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newClient) })
+      const r = await apiFetch('/api/auth/create-client', { method: 'POST', body: JSON.stringify(newClient) })
       const data = await r.json()
       if (!r.ok) throw new Error(data.error)
       setMsg('Client created successfully!')

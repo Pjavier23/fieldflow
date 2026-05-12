@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
+import { apiFetch } from '../../lib/api-client'
 import Nav from '../../components/Nav'
 
 const fmt = n => n != null ? '$' + Number(n).toLocaleString() : '—'
@@ -41,7 +42,7 @@ export default function Dashboard() {
       const [profileRes, docsRes, analyticsRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         supabase.from('documents').select('*').eq('client_id', user.id).order('uploaded_at', { ascending: false }).limit(6),
-        fetch('/api/analytics').then(r => r.json())
+        apiFetch('/api/analytics').then(r => r.json())
       ])
 
       setProfile(profileRes.data)

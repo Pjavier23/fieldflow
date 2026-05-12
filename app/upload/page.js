@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
+import { apiFetch } from '../../lib/api-client'
 import Nav from '../../components/Nav'
 
 const DOC_TYPES = [
@@ -52,7 +53,7 @@ export default function UploadPage() {
         formData.append('files', file)
         formData.append('types', type)
       })
-      const r = await fetch('/api/docs/upload', { method: 'POST', body: formData })
+      const r = await apiFetch('/api/docs/upload', { method: 'POST', body: formData })
       const data = await r.json()
       if (!r.ok) throw new Error(data.error)
       setQueue([])

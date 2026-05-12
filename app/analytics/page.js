@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
+import { apiFetch } from '../../lib/api-client'
 import Nav from '../../components/Nav'
 
 const fmt = n => n != null ? '$' + Number(n).toLocaleString() : '—'
@@ -19,7 +20,7 @@ export default function AnalyticsPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/'); return }
       supabase.from('profiles').select('*').eq('id', user.id).single().then(({ data }) => setProfile(data))
-      fetch('/api/analytics').then(r => r.json()).then(setData)
+      apiFetch('/api/analytics').then(r => r.json()).then(setData)
     })
   }, [])
 

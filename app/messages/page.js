@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
+import { apiFetch } from '../../lib/api-client'
 import Nav from '../../components/Nav'
 
 const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
@@ -28,7 +29,7 @@ export default function MessagesPage() {
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
   async function loadMessages() {
-    const r = await fetch('/api/messages')
+    const r = await apiFetch('/api/messages')
     const data = await r.json()
     setMessages(Array.isArray(data) ? data : [])
   }
@@ -37,7 +38,7 @@ export default function MessagesPage() {
     if (!input.trim() || sending) return
     setSending(true)
     try {
-      await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: input }) })
+      await apiFetch('/api/messages', { method: 'POST', body: JSON.stringify({ body: input }) })
       setInput('')
       loadMessages()
     } finally { setSending(false) }
