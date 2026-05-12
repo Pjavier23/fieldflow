@@ -1,5 +1,5 @@
-import { createClient, createAdminClient } from '../../../../../lib/supabase/server'
-import { analyzeDocument } from '../../../../../lib/ai'
+import { createClient, createAdminClient } from '../../../../lib/supabase/server'
+import { analyzeDocument } from '../../../../lib/ai'
 import { NextResponse } from 'next/server'
 
 export const maxDuration = 60
