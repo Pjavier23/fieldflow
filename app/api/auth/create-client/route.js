@@ -1,5 +1,5 @@
-import { createAdminClient } from '../../../../../lib/supabase/server'
-import { getUserId } from '../../../../../lib/auth-helper'
+import { createAdminClient } from '../../../../lib/supabase/server'
+import { getUserId } from '../../../../lib/auth-helper'
 import { NextResponse } from 'next/server'
 
 export async function POST(req) {
